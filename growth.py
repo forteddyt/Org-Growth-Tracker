@@ -8,12 +8,14 @@ def printFlush(string = ''):
 	sys.stdout.flush()
 
 # Ensures that the pandas, numpy, and matplotlib imports are installed
+# Imports them with a local name specified by the dictionary
 def checkImports():
-	imports = ['numpy', 'pandas', 'matplotlib']
+	imports = {'numpy':'np', 'pandas':'py', 'matplotlib':'mp'}
 
-	for package in imports:
+	for package, target in imports.items():
 		try:
-			__import__(package)
+			globals()[target] = __import__(package)
+			printFlush("**" + package + " imported.\n\n")
 		except ImportError as e:
 			printFlush("The " + package + " package is not currently installed on this machine."
 					+ "\nThe "+ package + " package is needed in order for this script to run.")
@@ -31,8 +33,8 @@ def checkImports():
 				pip.main(['install', package])
 				printFlush("**" + package + " installed.")
 
-				__import__(package)
-				printFlush("**" + package + " imported.\n\n")			
+				globals()[target] = __import__(package)
+				printFlush("**" + package + " imported.\n\n")
 			else:
 				import time
 				printFlush(package + " will not be installed.\n\tClosing script...")
@@ -40,8 +42,18 @@ def checkImports():
 				sys.exit()
 		
 
+# There is currently no way to obtain GitHub Audit Log's through GitHub's API, 
+# so this function will prompt user to specify the Audit Log filepath
+# Audit Logs should be .csv files
+def getAuditLog():
+	pass
+
+def preProcess():
+	checkImports()
+	getAuditLog()
+
 def main():
-	checkImports()	
+	preProcess()
 
 if __name__ == "__main__":
 	main()
