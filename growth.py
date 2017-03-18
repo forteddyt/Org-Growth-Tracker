@@ -12,32 +12,37 @@ def printFlush(string = ''):
 def checkImports():
 	imports = {'numpy':'np', 'pandas':'py', 'matplotlib':'mp'}
 
-	for package, target in imports.items():
+	print(sys.version)
+
+	for module, target in imports.items():
 		try:
-			globals()[target] = __import__(package)
-			printFlush("**" + package + " imported.\n\n")
+			globals()[target] = __import__(module)
+			printFlush("**" + module + " imported.")
 		except ImportError as e:
-			printFlush("The " + package + " package is not currently installed on this machine."
-					+ "\nThe "+ package + " package is needed in order for this script to run.")
-			resp = input("Would you like to install the " + package + " package?\n\t[Y]es or [N]o:")
+			printFlush("The " + module + " module is not currently installed on this machine."
+					+ "\nThe "+ module + " module is needed in order for this script to run.")
+			resp = input("Would you like to install the " + module + " module?\n\t[Y]es or [N]o:")
 
 			# If invalid reponse is given, continuing asking until a valid response is given
 			while (resp.upper() != "Y" and resp.upper() != "YES"
 				and resp.upper() != "N" and resp.upper() != "NO"):
-				resp = input("Invalid response.\nWould you like to install the " + resp + " package?\n\t[Y]es or [N]o: ")
+				resp = input("Invalid response.\nWould you like to install the " + resp + " module?\n\t[Y]es or [N]o: ")
 			
-			# Install package with pip if the user allows it, exit the script otherwise
+			# Install module with pip if the user allows it, exit the script otherwise
 			if (resp.upper() == "Y" or resp.upper() == "YES"):
-				printFlush("Installing " + package + "...")
+				printFlush("Installing " + module + "...")
 				import pip
-				pip.main(['install', package])
-				printFlush("**" + package + " installed.")
+				pip.main(['install', module])
+				printFlush("**" + module + " installed.")
 
-				globals()[target] = __import__(package)
-				printFlush("**" + package + " imported.\n\n")
+				if(target != ''):
+					globals()[target] = __import__(module)
+				else:
+					__import__(module)
+				printFlush("**" + module + " imported.\n\n")
 			else:
 				import time
-				printFlush(package + " will not be installed.\n\tClosing script...")
+				printFlush(module + " will not be installed.\n\tClosing script...")
 				time.sleep(3);
 				sys.exit()
 		
@@ -46,10 +51,20 @@ def checkImports():
 # so this function will prompt user to specify the Audit Log filepath
 # Audit Logs should be .csv files
 def getAuditLog():
+	from tkinter import Tk
+	from tkinter import filedialog
+
+	root = Tk()
+
+	root.withdraw() # we don't want a full GUI, so keep the root window from appearing
+	file_path = filedialog.askopenfilename() # show an "Open" dialog box and return the path to the selected file
+	print(file_path)
+
 	pass
 
 def preProcess():
 	checkImports()
+	printFlush("Select the GitHub Audit Log .csv file")
 	getAuditLog()
 
 def main():
