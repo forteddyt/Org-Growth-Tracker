@@ -7,6 +7,13 @@ def printFlush(string = ''):
 	print(string)
 	sys.stdout.flush()
 
+def exitScript():
+	import sys
+
+	printFlush("Exiting script")
+	
+	sys.exit()
+
 # Ensures that the pandas, numpy, and matplotlib imports are installed
 # Imports them with a local name specified by the dictionary
 def checkImports():
@@ -67,6 +74,9 @@ def getAuditLogTK():
 	
 	# printFlush(file_path)
 
+	if file_path == (): # If the user closed the file chooser
+		exitScript()
+
 	return file_path
 
 def getAuditLogFallback():
@@ -96,6 +106,8 @@ def preProcess():
 		printFlush("*** Trying again...")
 		filePath = getAuditLog()
 		file = Path(filePath)
+
+
 
 def main():
 	preProcess()
