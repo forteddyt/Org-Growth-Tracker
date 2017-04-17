@@ -10,9 +10,10 @@ def printFlush(string = ''):
 # Ensures that the pandas, numpy, and matplotlib imports are installed
 # Imports them with a local name specified by the dictionary
 def checkImports():
+	# Module name to be imported mapping to the string which is will be reffered to as
 	imports = {'numpy':'np', 'pandas':'py', 'matplotlib':'mp'}
 
-	print(sys.version)
+	printFlush(sys.version)
 
 	for module, target in imports.items():
 		try:
@@ -45,27 +46,56 @@ def checkImports():
 				printFlush(module + " will not be installed.\n\tClosing script...")
 				time.sleep(3);
 				sys.exit()
+
+	printFlush("Modules importing complete!\n")
 		
 
 # There is currently no way to obtain GitHub Audit Log's through GitHub's API, 
 # so this function will prompt user to specify the Audit Log filepath
 # Audit Logs should be .csv files
-def getAuditLog():
+def getAuditLogTK():
 	from tkinter import Tk
 	from tkinter import filedialog
 
 	root = Tk()
 
 	root.withdraw() # we don't want a full GUI, so keep the root window from appearing
-	file_path = filedialog.askopenfilename() # show an "Open" dialog box and return the path to the selected file
-	print(file_path)
+	
+	printFlush("Select the GitHub Audit Log .csv file")
 
-	pass
+	file_path = filedialog.askopenfilename() # show an "Open" dialog box and return the path to the selected file
+	
+	# printFlush(file_path)
+
+	return file_path
+
+def getAuditLogFallback():
+	filePath = input('Please provide the full path to the .csv Audit Log file:\n')
+
+	# printFlush(filePath)
+
+	return filePath
+
+def getAuditLog():
+	try:
+		return getAuditLogTK()
+	except ImportError as e:
+		printFlush("Tkinter installation not found, falling back to console input.")
+		return getAuditLogFallback()
+
 
 def preProcess():
+	from pathlib import Path
+	
 	checkImports()
-	printFlush("Select the GitHub Audit Log .csv file")
-	getAuditLog()
+	
+	filePath = getAuditLog()
+	file = Path(filePath)
+	while not file.is_file():
+		printFlush("\n*** Invalid file path -- '" + filePath + "' does not exist.")
+		printFlush("*** Trying again...")
+		filePath = getAuditLog()
+		file = Path(filePath)
 
 def main():
 	preProcess()
