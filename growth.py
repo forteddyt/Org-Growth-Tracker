@@ -74,13 +74,16 @@ def getAuditLogTK():
 	
 	# printFlush(file_path)
 
-	if file_path == (): # If the user closed the file chooser
+	if file_path == () or file_path == '': # If the user closed the file chooser
 		exitScript()
 
 	return file_path
 
 def getAuditLogFallback():
 	filePath = input('Please provide the full path to the .csv Audit Log file:\n')
+
+	if file_path == '': # If the user enters nothing
+		exitScript()
 
 	# printFlush(filePath)
 
@@ -101,8 +104,11 @@ def preProcess():
 	
 	filePath = getAuditLog()
 	file = Path(filePath)
-	while not file.is_file():
-		printFlush("\n*** Invalid file path -- '" + filePath + "' does not exist.")
+	while not file.is_file() or filePath.rsplit('.')[-1] != 'csv':
+		if not file.is_file():
+			printFlush("\n*** Invalid file path -- '" + filePath + "' does not exist.")
+		else:
+			printFlush("\n*** Selected file is not a .csv file.");
 		printFlush("*** Trying again...")
 		filePath = getAuditLog()
 		file = Path(filePath)
