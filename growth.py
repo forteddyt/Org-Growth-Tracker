@@ -54,7 +54,7 @@ def checkImports():
 				time.sleep(3);
 				sys.exit()
 
-	printFlush("Modules importing complete!\n")
+	printFlush("Module importing complete!\n")
 		
 
 # There is currently no way to obtain GitHub Audit Log's through GitHub's API, 
@@ -96,6 +96,43 @@ def getAuditLog():
 		printFlush("Tkinter installation not found, falling back to console input.")
 		return getAuditLogFallback()
 
+# Checks if the user has a local, script-generated .csv file. If they do, the script
+# will append to and utilize it for data visualization. If they do not, the script
+# will ask if they want one and create one if the user so pleases. 
+def checkLocalCSV(filePath):
+	import os
+	from pathlib import Path
+
+	base_dir = os.getcwd()
+	csvName = 'auditLogGrowth.csv'
+	csvFilePath = os.path.join(base_dir, csvName)
+	csvFile = Path(csvFilePath)
+
+	if not csvFile.is_file():
+		resp = input('No script-generated csv file found. Creating ' 
+			+ 'a script-generated file will allow the script to automatically ' 
+			+ 'update it with new data as new Audit Log csvs are added, expanding '
+			+ 'the timeline of data crunching. \n Would you like to create a script-generated file?\n\t[Y]es or [N]o: ')
+		if (resp.upper() == "Y" or resp.upper() == "YES"):
+			from shutil import copyfile
+			open(csvFilePath, 'w')
+			copyfile(filePath, csvFilePath)
+			return True
+		else:
+			return False
+	else:
+		printFlush('Script-generated csv file found. New data from selected csv file will be appended onto it.')
+		return True
+
+# Updates the local, script-generated .csv file, if the user has one. If the user
+# does not have one, it will use the selected file for data visualization.
+def updateLocalCSV(filePath):
+	hasLocalCSV = checkLocalCSV(filePath)
+	if not hasLocalCSV:
+		return False
+	# TODO: Implement this function
+
+
 
 def preProcess():
 	from pathlib import Path
@@ -113,7 +150,7 @@ def preProcess():
 		filePath = getAuditLog()
 		file = Path(filePath)
 
-
+	updateLocalCSV(filePath)
 
 def main():
 	preProcess()
